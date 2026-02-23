@@ -359,7 +359,8 @@ EMISSIONS_PROVIDER=new-provider
 No changes required in core.
 
 ---
-# TODO
+# TODOs
+
 [ ] Improve config.php scaffholding
 
 [ ] Write Unit Tests
@@ -367,4 +368,9 @@ No changes required in core.
 [ ] Add more integrations
 
 [ ] Add a Generator to scaffhold new integrations
+
+[ ] Allow Core and Module Class to be extended
+
+[ ] Refactor Core Contracts
+
 
