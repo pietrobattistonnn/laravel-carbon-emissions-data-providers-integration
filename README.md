@@ -1,4 +1,4 @@
-#Emissions Ecosystem (Spatie Skeleton Style)
+# Emissions Ecosystem
 
 This repository contains:
 
@@ -9,7 +9,7 @@ Each package follows Spatie's Laravel package skeleton conventions.
 
 ---
 
-# Ceedbox Emissions Ecosystem
+#Emissions Ecosystem
 
 Modular emissions provider system for Laravel 10 applications.
 
@@ -355,4 +355,6 @@ No changes required in core.
 
 ---
 ## TODO
-[] Improve config.php scaffholding
+[ ] Improve config.php scaffholding
+[ ] Improve add more integrations
+
