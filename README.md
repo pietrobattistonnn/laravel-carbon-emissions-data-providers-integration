@@ -356,5 +356,6 @@ No changes required in core.
 ---
 ## TODO
 [ ] Improve config.php scaffholding
-[ ] Improve add more integrations
+[ ] Write Unit Tests
+[ ] Add more integrations
 
