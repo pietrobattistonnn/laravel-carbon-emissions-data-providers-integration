@@ -1,25 +1,21 @@
-# Ceedbox Emissions Ecosystem (Spatie Skeleton Style)
+#Emissions Ecosystem (Spatie Skeleton Style)
 
 This repository contains:
 
-- packages/emissions-core
-- packages/lune-module
+* `packages/emissions-core`
+* `packages/lune-module`
 
 Each package follows Spatie's Laravel package skeleton conventions.
 
-
+---
 
 # Ceedbox Emissions Ecosystem
 
 Modular emissions provider system for Laravel 10 applications.
 
-This repository contains two packages:
+This system is **deployment-based**, not runtime multi-tenant.
 
-- `ceedbox/emissions-core`
-- `ceedbox/lune-module`
-
-The application never references a specific provider (e.g. Lune).  
-Provider selection is resolved per tenant at runtime.
+Each Laravel installation runs independently per customer server and selects its emissions provider via environment configuration.
 
 ---
 
@@ -28,77 +24,138 @@ Provider selection is resolved per tenant at runtime.
 ## High-Level Structure
 
 ```
-App (Laravel 10)
+Laravel App (Customer Deployment)
+   ↓
+config/emissions.php
    ↓
 ceedbox/emissions-core
    ↓
-Provider module (e.g. ceedbox/lune-module)
-```
-
----
-
-## Provider Resolution Flow
-
-```
-Tenant (Laravel instance)
-  └── many Clients
-        └── many Users
-
-TenantResolverInterface (app)
-  └── returns provider name (e.g. "lune")
-
-EmissionsManager (core)
-  └── resolves concrete provider
-
-Provider module (e.g. LuneClient)
-  └── builds final external URL
-```
-
----
-
-# 🔐 Secure Redirect Flow (Recommended)
-
-This ecosystem is designed for SPA environments where users may stay logged in for hours.
-
-### Flow Diagram
-
-```
-SPA loads
+Container resolves configured provider
    ↓
+Concrete Provider (e.g. LuneClient)
+```
+
+Core does not reference any provider directly.
+Providers are defined via configuration and resolved through Laravel's container.
+
+---
+
+# ⚙️ Configuration
+
+## 1️⃣ Publish Configuration
+
+```bash
+php artisan vendor:publish --tag=emissions-config
+```
+
+This generates a **single file**:
+
+```
+config/emissions.php
+```
+
+---
+
+## 2️⃣ config/emissions.php
+
+```php
+<?php
+
+return [
+
+    /*
+    |--------------------------------------------------------------------------
+    | Active Provider
+    |--------------------------------------------------------------------------
+    */
+
+    'provider' => env('EMISSIONS_PROVIDER', 'lune'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Provider Definitions
+    |--------------------------------------------------------------------------
+    */
+
+    'providers' => [
+
+        'lune' => [
+
+            'class' => \Ceedbox\LuneModule\LuneClient::class,
+
+            'config' => [
+                'orgId'   => env('LUNE_ORG_ID'),
+                'apiKey'  => env('LUNE_API_KEY'),
+                'baseUrl' => env('LUNE_BASE_URL', 'https://sustainability.lune.co'),
+                'ttl'     => env('LUNE_TOKEN_TTL', 3600),
+            ],
+
+        ],
+
+    ],
+
+];
+```
+
+All provider configuration lives in this single file.
+
+---
+
+## 3️⃣ .env Per Customer Deployment
+
+```env
+EMISSIONS_PROVIDER=lune
+
+LUNE_ORG_ID=...
+LUNE_API_KEY=...
+LUNE_BASE_URL=https://sustainability.lune.co
+LUNE_TOKEN_TTL=3600
+```
+
+Each Laravel installation is isolated by deployment.
+
+---
+
+# 🔐 Secure Redirect Flow (SPA)
+
+```
 User clicks "View Emissions"
-   ↓
-Backend generates temporary signed route (120s)
-   ↓
-User opens signed URL
-   ↓
-Core validates signature + auth
-   ↓
-Provider builds external URL with 1-hour JWT
-   ↓
+    ↓
+Backend validates user ↔ client access
+    ↓
+EmissionsManager resolves active provider
+    ↓
+Provider generates URL with 1-hour JWT
+    ↓
 redirect()->away(external_url)
+```
+
+Example generated URL:
+
+```
+https://sustainability.lune.co/logistics/ORG/CLIENT?access_token=JWT&offset=true
 ```
 
 ---
 
 # 📦 Package Breakdown
 
----
-
 ## 1️⃣ ceedbox/emissions-core
 
 ### Responsibilities
 
-- Defines provider contract
-- Defines tenant resolver contract
-- Resolves provider per tenant
-- Exposes signed redirect endpoints
-- Provider-agnostic
+* Defines `EmissionsProviderInterface`
+* Provides `EmissionsManager`
+* Reads provider selection from config
+* Resolves provider via Laravel container
+* Remains provider-agnostic
 
-### Does NOT:
+### Does NOT
 
-- Generate JWT
-- Know about Lune
-- Know external URL structure
+* Know about Lune
+* Manage tenants
+* Contain provider-specific logic
+* Handle JWT generation
 
 ---
 
@@ -106,154 +163,135 @@ redirect()->away(external_url)
 
 ### Responsibilities
 
-- Implements EmissionsProviderInterface
-- Generates Lune JWT
-- Scopes token to client handle
-- Builds final dashboard URL
-
-### Does NOT:
-
-- Handle routing
-- Handle auth
-- Know about tenant resolution
+* Implements `EmissionsProviderInterface`
+* Generates JWT (HS256)
+* Scopes token to client handle
+* Appends `offset=true`
+* Contains no Laravel-specific logic
 
 ---
+
 # 🧪 Testing Without Laravel
 
-Packages can be tested in isolation, without Laravel.
+Packages can be tested independently using the dev runner.
+
+Run interactive generator:
 
 ```bash
- make dev-quick-test
+make dev-run
 ```
 
-## Manual dry run example:
+Example:
 
 ```bash
-    emissions$ make dev-quick-test
-    cd packages/dev-runner && composer install
-    Installing dependencies from lock file (including require-dev)
-    Verifying lock file contents can be installed on current platform.
-    Nothing to install, update or remove
-    Generating autoload files
-    8 packages you are using are looking for funding.
-    Use the `composer fund` command to find out more!
-    cd packages/dev-runner && php bin/lune generate
-    Org ID [ORG123]: 1245
-    Client Handle [CLIENT1]: 07856
-    API Secret [secret]:
-
-    Generated URL:
-    https://sustainability.lune.co/logistics/1245/07856?access_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3NzE4NTYzMjcsImV4cCI6MTc3MTg1OTkyNywic2NvcGUiOnsiaGFuZGxlcyI6WyIwNzg1NiJdfX0.WYInofIqhC7eFOV54gGw7SNMY7xQzyOn7_QdRiNhduM
+cd packages/dev-runner && php bin/lune generate
 ```
 
-This works without Laravel.
+JWT debug:
 
+```bash
+php packages/dev-runner/bin/lune debug:jwt "JWT_OR_URL"
+```
+
+Signature verification:
+
+```bash
+php packages/dev-runner/bin/lune debug:jwt "JWT" --verify --secret="..."
+```
+
+Works without Laravel.
 
 ---
 
 # 🚀 Installation (Laravel 10 App)
 
-Install both packages:
+Install packages:
 
 ```bash
 composer require ceedbox/emissions-core
 composer require ceedbox/lune-module
 ```
 
----
+Publish config:
 
-v
-# 🔗 Generating Signed Redirect URLs (SPA)
-
-Dashboard:
-
-```php
-URL::temporarySignedRoute(
-    'emissions.redirect.dashboard',
-    now()->addSeconds(120),
-    ['client' => $clientHandle]
-);
+```bash
+php artisan vendor:publish --tag=emissions-config
 ```
 
-## NOT ENABLED FOR NOW!
-Per emissions:
+Inject manager:
 
 ```php
-URL::temporarySignedRoute(
-    'emissions.redirect.emissions',
-    now()->addSeconds(120),
-    [
-        'client' => $clientHandle,
-        'emissionsId' => $emissionsId
-    ]
-);
+use Ceedbox\EmissionsCore\EmissionsManager;
+
+public function __construct(
+    private EmissionsManager $emissions
+) {}
 ```
 
-Frontend:
+Generate URL:
 
-```html
-<a href="SIGNED_URL" target="_blank" rel="noreferrer">
-    View Emissions
-</a>
+```php
+$url = $this->emissions
+    ->provider()
+    ->dashboardUrl($clientHandle);
+
+return redirect()->away($url);
 ```
 
 ---
 
 # 🔐 Security Notes
 
-## 1. Always validate user-client relationship
+### 1. Always validate user-client relationship
 
-The core package does not know your domain rules.
+Before generating emissions URLs, ensure:
 
-You must ensure:
-
-- Authenticated user belongs to the requested client
-- Or is authorized to access it
-
-Add middleware or policy checks.
+* Authenticated user belongs to the requested client
+* Or is authorized to access it
 
 ---
 
-## 2. Tokens must never be returned via JSON
+### 2. Never return JWT URLs in JSON
 
-The external URL contains:
+External URLs contain:
 
 ```
 ?access_token=JWT
 ```
 
-Never send this URL in API responses. Always redirect.
+Always redirect server-side.
 
 ---
 
-## 3. Use HTTPS only
+### 3. Use HTTPS only
 
-Access tokens are in query string. HTTPS is mandatory.
+Access tokens are transmitted via query string.
 
 ---
 
-## 4. Avoid logging full URLs
+### 4. Avoid logging full URLs
 
 Do not log URLs containing `access_token`.
+
 Log metadata only:
 
-- user_id
-- client
-- provider
-- emissions_id
+* user_id
+* client
+* provider
+* emissions_id
 
 ---
 
-## 5. Token lifetime
+### 5. Token lifetime
 
-Lune JWT lifetime: 1 hour  
-Internal signed redirect lifetime: ~120 seconds  
+Lune JWT lifetime: 1 hour
+Signed internal route lifetime (if used): ~120 seconds
 
 These are independent.
 
 ---
 
-# 🛠 Local Development (Mono-Repo Style)
+# 🛠 Local Development (Mono-Repo)
 
 Install dependencies:
 
@@ -267,41 +305,35 @@ Run tests:
 make test
 ```
 
-Run per package:
+Run dev CLI:
 
 ```bash
-make test-core
-make test-lune
+make dev-run
+```
+
+Debug JWT:
+
+```bash
+make dev-jwt TOKEN="..."
 ```
 
 ---
 
-# 📈 Future Expansion
+# 📈 Adding a New Provider
 
-Add new provider:
+To support a new emissions provider:
 
+1. Create new provider module
+2. Implement `EmissionsProviderInterface`
+3. Add provider definition to `config/emissions.php`
+4. Set:
+
+```env
+EMISSIONS_PROVIDER=new-provider
 ```
-ceedbox/another-provider-module
-```
 
-Steps:
-
-1. Implement `EmissionsProviderInterface`
-2. Register provider in config
-3. Set tenant `emissions_provider` to new value
-
-No app changes required.
+No changes required in core.
 
 ---
-
-# 🧩 Design Principles
-
-- Provider-agnostic core
-- Signed redirect security pattern
-- No frontend token storage
-- Stateless JWT generation
-- Laravel 10 compatible
-- Spatie-style package structure
-
----
-
+## TODO
+[] Improve config.php scaffholding
