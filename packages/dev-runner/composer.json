@@ -1,0 +1,27 @@
+{
+    "repositories": [
+    {
+        "type": "path",
+        "url": "../emissions-core",
+        "options": { "symlink": true }
+    },
+    {
+        "type": "path",
+        "url": "../lune-module",
+        "options": { "symlink": true }
+    }
+    ],
+    "require": {
+        "ceedbox/emissions-core": "*",
+        "ceedbox/lune-module": "*",
+        "symfony/console": "^6.0"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+
+    "autoload": {
+    "psr-4": {
+        "DevRunner\\": "src/"
+    }
+    }
+}
