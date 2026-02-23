@@ -13,7 +13,7 @@ help:
 	@echo ""
 	@echo "Available commands:"
 	@echo ""
-	@echo "  make dev-run        Run interactive Lune generator (no Laravel required)"
+	@echo "  make dev-run        Run interactive Lune URL generator (no Laravel required)"
 	@echo "  make dev-jwt        Debug JWT (TOKEN required)"
 	@echo ""
 	@echo "  make install        Install all package dependencies"
@@ -30,7 +30,7 @@ help:
 # -----------------------------------------
 
 dev-run:
-	cd packages/dev-runner && composer install
+	$(MAKE) install-dev
 	cd packages/dev-runner && php bin/lune generate
 
 dev-jwt:

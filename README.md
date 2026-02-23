@@ -19,7 +19,7 @@ Each Laravel installation runs independently per customer server and selects its
 
 ---
 
-# 🧱 Architecture Overview
+# Architecture Overview
 
 ## High-Level Structure
 
@@ -40,9 +40,9 @@ Providers are defined via configuration and resolved through Laravel's container
 
 ---
 
-# ⚙️ Configuration
+# Configuration
 
-## 1️⃣ Publish Configuration
+## 1️. Publish Configuration
 
 ```bash
 php artisan vendor:publish --tag=emissions-config
@@ -56,7 +56,7 @@ config/emissions.php
 
 ---
 
-## 2️⃣ config/emissions.php
+## 2️. config/emissions.php
 
 ```php
 <?php
@@ -101,7 +101,7 @@ All provider configuration lives in this single file.
 
 ---
 
-## 3️⃣ .env Per Customer Deployment
+## 3️. .env Per Customer Deployment
 
 ```env
 EMISSIONS_PROVIDER=lune
@@ -116,7 +116,7 @@ Each Laravel installation is isolated by deployment.
 
 ---
 
-# 🔐 Secure Redirect Flow (SPA)
+# Example Redirect Flow (SPA)
 
 ```
 User clicks "View Emissions"
@@ -194,7 +194,7 @@ make dev-run
     Use the `composer fund` command to find out more!
     cd packages/dev-runner && php bin/lune generate
 
-    
+
     Org ID [ORG123]: 1234
     Client Handle [CLIENT1]: client-124
     API Secret [secret]:
@@ -251,6 +251,7 @@ public function __construct(
 ) {}
 ```
 
+## Example Usage
 Generate URL:
 
 ```php
@@ -364,4 +365,6 @@ No changes required in core.
 [ ] Write Unit Tests
 
 [ ] Add more integrations
+
+[ ] Add a Generator to scaffhold new integrations
 
