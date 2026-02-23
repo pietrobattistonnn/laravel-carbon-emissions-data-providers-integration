@@ -175,28 +175,30 @@ https://sustainability.lune.co/logistics/ORG/CLIENT?access_token=JWT&offset=true
 
 Packages can be tested independently using the dev runner.
 
-Run interactive generator:
+Run interactive URL generator:
 
 ```bash
 make dev-run
 ```
 Example:
+
 ```bash
 make dev-run
-cd packages/dev-runner && composer install
-Installing dependencies from lock file (including require-dev)
-Verifying lock file contents can be installed on current platform.
-Nothing to install, update or remove
-Generating autoload files
-8 packages you are using are looking for funding.
-Use the `composer fund` command to find out more!
-cd packages/dev-runner && php bin/lune generate
-Org ID [ORG123]: 1234
-Client Handle [CLIENT1]: client-124
-API Secret [secret]:
 
-Generated URL:
-https://sustainability.lune.co/logistics/1234/client-124?access_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3NzE4NjE3MjEsImV4cCI6MTc3MTg2NTMyMSwic2NvcGUiOnsiaGFuZGxlcyI6WyJjbGllbnQtMTI0Il19fQ.E019HE9MfuiG0pZB30mfh6bzusM9eolgvzwLi1KxDk4
+    cd packages/dev-runner && composer install
+    Installing dependencies from lock file (including require-dev)
+    Verifying lock file contents can be installed on current platform.
+    Nothing to install, update or remove
+    Generating autoload files
+    8 packages you are using are looking for funding.
+    Use the `composer fund` command to find out more!
+    cd packages/dev-runner && php bin/lune generate
+    Org ID [ORG123]: 1234
+    Client Handle [CLIENT1]: client-124
+    API Secret [secret]:
+
+    Generated URL:
+    https://sustainability.lune.co/logistics/1234/client-124?access_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3NzE4NjE3MjEsImV4cCI6MTc3MTg2NTMyMSwic2NvcGUiOnsiaGFuZGxlcyI6WyJjbGllbnQtMTI0Il19fQ.E019HE9MfuiG0pZB30mfh6bzusM9eolgvzwLi1KxDk4
 ```
 
 
