@@ -354,8 +354,10 @@ EMISSIONS_PROVIDER=new-provider
 No changes required in core.
 
 ---
-## TODO
+# TODO
 [ ] Improve config.php scaffholding
+
 [ ] Write Unit Tests
+
 [ ] Add more integrations
 
