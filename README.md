@@ -140,7 +140,7 @@ https://sustainability.lune.co/logistics/ORG/CLIENT?access_token=JWT&offset=true
 
 # 📦 Package Breakdown
 
-## 1️⃣ ceedbox/emissions-core
+## 1️. ceedbox/emissions-core
 
 ### Responsibilities
 
@@ -159,7 +159,7 @@ https://sustainability.lune.co/logistics/ORG/CLIENT?access_token=JWT&offset=true
 
 ---
 
-## 2️⃣ ceedbox/lune-module
+## 2️. ceedbox/lune-module
 
 ### Responsibilities
 
@@ -171,7 +171,7 @@ https://sustainability.lune.co/logistics/ORG/CLIENT?access_token=JWT&offset=true
 
 ---
 
-# 🧪 Testing Without Laravel
+# Testing Without Laravel
 
 Packages can be tested independently using the dev runner.
 
@@ -226,7 +226,7 @@ Works without Laravel.
 
 ---
 
-# 🚀 Installation (Laravel 10 App)
+# Installation (Laravel 10 App)
 
 Install packages:
 
@@ -264,7 +264,7 @@ return redirect()->away($url);
 
 ---
 
-# 🔐 Security Notes
+# Security Notes
 
 ### 1. Always validate user-client relationship
 
@@ -315,7 +315,7 @@ These are independent.
 
 ---
 
-# 🛠 Local Development (Mono-Repo)
+# Local Development (Mono-Repo)
 
 Install dependencies:
 
@@ -343,7 +343,7 @@ make dev-jwt TOKEN="..."
 
 ---
 
-# 📈 Adding a New Provider
+# Adding a New Provider
 
 To support a new emissions provider:
 
